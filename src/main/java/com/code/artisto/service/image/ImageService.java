@@ -5,7 +5,7 @@ import com.code.artisto.exceptions.ResourceNotFoundException;
 import com.code.artisto.model.Image;
 import com.code.artisto.model.Product;
 import com.code.artisto.repository.ImageRepository;
-import com.code.artisto.service.product.IProductService;
+import com.code.artisto.service.product.ProductInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,23 +19,41 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ImageService implements IImageService{
+public class ImageService implements ImageInterface {
     private final ImageRepository imageRepository;
-    private final IProductService productService;
+    private final ProductInterface productService;
 
     @Override
-    public Image addImage(List<MultipartFile> files, Long productId) {
+    public List<ImageDto> saveImages(Long productId,List<MultipartFile> files) {
         Product product = productService.getProductById(productId);
-        List<ImageDto> imageDto = new ArrayList<>();
+
+        List<ImageDto> savedImageDto = new ArrayList<>();
         for(MultipartFile file : files){
             try{
                 Image image = new Image();
+                image.setFileName(file.getOriginalFilename());
+                image.setFileType(file.getContentType());
+                image.setImage(new SerialBlob(file.getBytes()));
+                image.setProduct(product);
 
-            } catch (){
+                String buildDownloadUrl = "/api/v1/images/image/download/";
+                String downloadUrl = buildDownloadUrl + image.getId();
+                image.setDownloadUrl(downloadUrl);
+                Image savedImage = imageRepository.save(image);
 
+                savedImage.setDownloadUrl(buildDownloadUrl + savedImage.getId());
+                imageRepository.save(savedImage);
+
+                ImageDto imageDto = new ImageDto();
+                imageDto.setId(savedImage.getId());
+                imageDto.setFileName(savedImage.getFileName());
+                imageDto.setDownloadUrl(savedImage.getDownloadUrl());
+                savedImageDto.add(imageDto);
+            } catch (IOException | SQLException e){
+              throw new RuntimeException(e.getMessage());
             }
         }
-        return null;
+        return savedImageDto;
     }
 
     @Override
@@ -57,7 +75,7 @@ public class ImageService implements IImageService{
     }
 
     @Override
-    public void deleteImage(Long id) {
+    public void deleteImageById(Long id) {
         imageRepository.findById(id).ifPresentOrElse(imageRepository :: delete, () -> {
             throw new ResourceNotFoundException("no image found with id:" + id);
         });

@@ -6,7 +6,7 @@ import com.code.artisto.request.UpdateProductRequest;
 
 import java.util.List;
 
-public interface IProductService {
+public interface ProductInterface {
     Product addProduct(AddProductRequest product);
     Product getProductById(Long id);
     Product updateProduct(UpdateProductRequest product, Long productId);
