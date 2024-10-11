@@ -26,9 +26,15 @@ public class ProductService implements ProductInterface{
                 request.getDescription(),
                 request.getPrice(),
                 request.getStock(),
+                request.getImages(),
                 request.getAvailable()
         );
     };
+
+    @Override
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
 
     @Override
     public Product getProductById(Long id) {
@@ -44,24 +50,20 @@ public class ProductService implements ProductInterface{
         .orElseThrow(() -> new ProductNotFoundException("product not found!"));
     }
 
-    @Override
-    public void deleteProductById(Long id) {
-        productRepository.findById(id)
-                .ifPresentOrElse(productRepository::delete,
-                        ()->{throw new ProductNotFoundException("product not found!");});
-    }
-
     private Product updateExistingProduct(Product existingProduct, UpdateProductRequest request){
         existingProduct.setName(request.getName());
         existingProduct.setDescription(request.getDescription());
         existingProduct.setPrice(request.getPrice());
         existingProduct.setStock(request.getStock());
+        existingProduct.setImages(request.getImages());
         existingProduct.setAvailable(request.getAvailable());
         return existingProduct;
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public void deleteProductById(Long id) {
+        productRepository.findById(id)
+                .ifPresentOrElse(productRepository::delete,
+                        ()->{throw new ProductNotFoundException("product not found!");});
     }
 }

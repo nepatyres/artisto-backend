@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,6 +21,8 @@ public class Product {
     private String description;
     private BigDecimal price;
     private int stock;
+    @ElementCollection
+    private List<String> images;
     private Boolean available;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -28,14 +31,12 @@ public class Product {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private MoreProducts moreProducts;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
-
-    public Product(String name, String description, BigDecimal price, int stock, Boolean available) {
+    public Product(String name, String description, BigDecimal price, int stock,List<String> images ,Boolean available) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
+        this.images = images;
         this.available = available;
     }
 }

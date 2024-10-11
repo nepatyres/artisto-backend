@@ -3,6 +3,7 @@ package com.code.artisto.request;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class UpdateProductRequest {
@@ -11,5 +12,6 @@ public class UpdateProductRequest {
     private String description;
     private BigDecimal price;
     private int stock;
+    private List<String> images;
     private Boolean available;
 }

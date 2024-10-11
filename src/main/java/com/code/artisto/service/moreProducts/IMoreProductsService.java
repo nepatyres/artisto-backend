@@ -1,6 +1,5 @@
 package com.code.artisto.service.moreProducts;
 
-import com.code.artisto.model.Image;
 import com.code.artisto.model.MoreProducts;
 import com.code.artisto.request.AddProductRequest;
 
